@@ -194,7 +194,10 @@ const SelectOriginDetailsScreen = () => {
           disabled={!country || !language}
           onPress={() => {
             console.log('Navigate to next screen with:', country, language);
-            // Navigation to next screen would go here
+            navigation.navigate('SelectDocumentTemplate', {
+              country,
+              language
+            });
           }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
