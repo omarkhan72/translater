@@ -121,7 +121,7 @@ const SelectDocumentTemplateScreen = () => {
           onPress={() => {
             const template = passportTemplates.find(t => t.id === selectedTemplate);
             console.log('Selected template:', template?.year, 'for', template?.country);
-            // Navigation to next screen would go here
+            navigation.navigate('SelectTargetDetails');
           }}
         >
           <Text style={styles.nextButtonText}>Next</Text>

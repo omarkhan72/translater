@@ -5,7 +5,8 @@ import {
   HomeScreen, 
   DocumentTypeScreen, 
   SelectOriginDetailsScreen,
-  SelectDocumentTemplateScreen
+  SelectDocumentTemplateScreen,
+  SelectTargetDetailsScreen
 } from '../screens';
 
 export type RootStackParamList = {
@@ -18,6 +19,7 @@ export type RootStackParamList = {
     country?: string;
     language?: string;
   };
+  SelectTargetDetails: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -35,6 +37,7 @@ const AppNavigator = () => {
         <Stack.Screen name="DocumentType" component={DocumentTypeScreen} />
         <Stack.Screen name="SelectOriginDetails" component={SelectOriginDetailsScreen} />
         <Stack.Screen name="SelectDocumentTemplate" component={SelectDocumentTemplateScreen} />
+        <Stack.Screen name="SelectTargetDetails" component={SelectTargetDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
