@@ -131,8 +131,17 @@ const DocumentTypeScreen = () => {
         <TouchableOpacity 
           style={styles.nextButton}
           onPress={() => {
-            console.log('Selected document:', documentTypes.find(doc => doc.id === selectedDocument)?.name);
-            // Navigation to next screen would go here
+            const selectedDoc = documentTypes.find(doc => doc.id === selectedDocument);
+            console.log('Selected document:', selectedDoc?.name);
+            
+            if (selectedDoc?.name === 'Passport') {
+              navigation.navigate('SelectOriginDetails', {
+                documentType: selectedDoc.name
+              });
+            } else {
+              // For other document types - future implementation
+              console.log('Navigation for other document types will be implemented later');
+            }
           }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
