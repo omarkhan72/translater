@@ -210,7 +210,7 @@ const SelectTargetDetailsScreen = () => {
               targetCountry: country,
               targetLanguage: language
             });
-            // Navigation to next screen would go here
+            navigation.navigate('Loading');
           }}
         >
           <Text style={styles.continueButtonText}>Continue</Text>
