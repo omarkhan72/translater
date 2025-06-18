@@ -9,8 +9,18 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigations/AppNavigator';
+
+type LoadingScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Loading'
+>;
 
 const LoadingScreen = () => {
+  const navigation = useNavigation<LoadingScreenNavigationProp>();
+  
   // Animation values
   const spinAnimation = new Animated.Value(0);
   const floatAnimation1 = new Animated.Value(0);
@@ -62,7 +72,15 @@ const LoadingScreen = () => {
     startFloatingAnimation(floatAnimation4, 3200, 300);
     startFloatingAnimation(floatAnimation5, 3500, 100);
     startFloatingAnimation(floatAnimation6, 2600, 500);
-  }, []);
+    
+    // Navigate to ReviewData screen after 3 seconds
+    const navigationTimer = setTimeout(() => {
+      navigation.navigate('ReviewData');
+    }, 3000);
+    
+    // Clear timeout if component unmounts
+    return () => clearTimeout(navigationTimer);
+  }, [navigation]);
 
   // Spin interpolation
   const spin = spinAnimation.interpolate({
