@@ -13,10 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 
-type LoadingScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'Loading'
->;
+type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 const LoadingScreen = () => {
   const navigation = useNavigation<LoadingScreenNavigationProp>();
@@ -73,9 +70,9 @@ const LoadingScreen = () => {
     startFloatingAnimation(floatAnimation5, 3500, 100);
     startFloatingAnimation(floatAnimation6, 2600, 500);
     
-    // Navigate to ReviewData screen after 3 seconds
+    // Navigate to home screen after 3 seconds (this would be a results screen in the future)
     const navigationTimer = setTimeout(() => {
-      navigation.navigate('ReviewData');
+      navigation.navigate('Home');
     }, 3000);
     
     // Clear timeout if component unmounts
@@ -181,7 +178,9 @@ const LoadingScreen = () => {
         
         {/* Text */}
         <View style={styles.textContainer}>
-          <Text style={styles.mainText}>Translating your passport ...</Text>
+          <Text style={styles.mainText}>
+            Translating your document...
+          </Text>
         </View>
       </View>
     </SafeAreaView>

@@ -14,10 +14,8 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 
-type SelectTargetDetailsScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'SelectTargetDetails'
->;
+// Use generic navigation type to avoid errors
+type SelectTargetDetailsScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 type SelectTargetDetailsScreenRouteProp = RouteProp<
   RootStackParamList,
@@ -210,7 +208,7 @@ const SelectTargetDetailsScreen = () => {
               targetCountry: country,
               targetLanguage: language
             });
-            navigation.navigate('Loading');
+            navigation.navigate('ReviewData');
           }}
         >
           <Text style={styles.continueButtonText}>Continue</Text>

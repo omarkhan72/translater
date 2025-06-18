@@ -14,10 +14,8 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 
-type ReviewDataScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'ReviewData'
->;
+// Define more specific navigation type that includes all screens
+type ReviewDataScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 type InputFieldProps = {
   label: string;
@@ -187,9 +185,8 @@ const ReviewDataScreen = () => {
             style={[styles.continueButton, !isChecked && styles.continueButtonDisabled]}
             disabled={!isChecked}
             onPress={() => {
-              console.log('Continue to translation - next screen would be implemented here');
-              // In the future we would navigate to the next screen:
-              // navigation.navigate('TranslationResultScreen');
+              console.log('Continuing to translation processing');
+              navigation.navigate('Loading');
             }}
           >
             <Text style={styles.continueButtonText}>Continue to Translation</Text>
