@@ -4,4 +4,6 @@ export { default as SelectOriginDetailsScreen } from './SelectOriginDetailsScree
 export { default as SelectDocumentTemplateScreen } from './SelectDocumentTemplateScreen';
 export { default as SelectTargetDetailsScreen } from './SelectTargetDetailsScreen';
 export { default as LoadingScreen } from './LoadingScreen';
-export { default as ReviewDataScreen } from './ReviewDataScreen'; 
+export { default as ReviewDataScreen } from './ReviewDataScreen';
+export { default as PaymentScreen } from './PaymentScreen'; 
+export { default as ConfirmationScreen } from './ConfirmationScreen'; 

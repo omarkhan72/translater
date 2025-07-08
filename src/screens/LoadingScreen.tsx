@@ -70,9 +70,9 @@ const LoadingScreen = () => {
     startFloatingAnimation(floatAnimation5, 3500, 100);
     startFloatingAnimation(floatAnimation6, 2600, 500);
     
-    // Navigate to home screen after 3 seconds (this would be a results screen in the future)
+    // Navigate to Payment screen after 3 seconds (instead of Home screen)
     const navigationTimer = setTimeout(() => {
-      navigation.navigate('Home');
+      navigation.navigate('Payment');
     }, 3000);
     
     // Clear timeout if component unmounts
