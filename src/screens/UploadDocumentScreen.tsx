@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { launchImageLibrary, launchCamera, CameraOptions, ImagePickerResponse } from 'react-native-image-picker';
 
 type UploadDocumentScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 type UploadDocumentScreenRouteProp = RouteProp<RootStackParamList, 'UploadDocument'>;
@@ -36,6 +36,33 @@ const UploadDocumentScreen = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<{uri: string} | null>(null);
   
+  // Camera options
+  const cameraOptions: CameraOptions = {
+    saveToPhotos: true,
+    mediaType: 'photo',
+    includeBase64: false,
+    includeExtra: true,
+    quality: 0.8,
+  };
+
+  // Handle camera response
+  const handleCameraResponse = (response: ImagePickerResponse) => {
+    if (response.didCancel) {
+      console.log('User cancelled camera');
+    } else if (response.errorCode) {
+      console.log('Camera Error:', response.errorMessage);
+      Alert.alert('Camera Error', `Failed to take photo: ${response.errorMessage}`);
+    } else if (response.assets && response.assets[0]) {
+      setIsUploading(true);
+      setSelectedImage({ uri: response.assets[0].uri || '' });
+      
+      // Simulate upload process
+      setTimeout(() => {
+        setIsUploading(false);
+      }, 1500);
+    }
+  };
+  
   // Request camera permissions (Android only)
   const requestCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -49,16 +76,66 @@ const UploadDocumentScreen = () => {
             buttonNegative: "Cancel"
           }
         );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
+        
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert('Permission Denied', 'Camera permission is required to take photos');
+          return false;
+        }
+        return true;
       } catch (error) {
         console.log(error);
+        Alert.alert('Error', 'Failed to request camera permission');
         return false;
       }
     }
     return true;
   };
   
-  // Handle document upload
+  // Take photo using camera
+  const takePhoto = async () => {
+    const hasPermission = await requestCameraPermission();
+    if (hasPermission) {
+      try {
+        launchCamera(cameraOptions, handleCameraResponse);
+      } catch (error) {
+        console.error('Error launching camera:', error);
+        Alert.alert('Camera Error', 'Failed to open camera. Please try again.');
+      }
+    }
+  };
+  
+  // Pick image from gallery
+  const pickImage = () => {
+    try {
+      launchImageLibrary(
+        {
+          mediaType: 'photo',
+          quality: 0.8,
+        },
+        (response) => {
+          if (response.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (response.errorCode) {
+            console.log('ImagePicker Error:', response.errorMessage);
+            Alert.alert('Gallery Error', `Failed to select image: ${response.errorMessage}`);
+          } else if (response.assets && response.assets[0]) {
+            setIsUploading(true);
+            setSelectedImage({ uri: response.assets[0].uri || '' });
+            
+            // Simulate upload process
+            setTimeout(() => {
+              setIsUploading(false);
+            }, 1500);
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Error launching image library:', error);
+      Alert.alert('Gallery Error', 'Failed to open gallery. Please try again.');
+    }
+  };
+  
+  // Handle document upload - show options
   const handleUpload = async () => {
     // Show action sheet with options
     Alert.alert(
@@ -67,58 +144,11 @@ const UploadDocumentScreen = () => {
       [
         {
           text: "Take Photo",
-          onPress: async () => {
-            const hasPermission = await requestCameraPermission();
-            if (hasPermission) {
-              launchCamera(
-                {
-                  mediaType: 'photo',
-                  quality: 0.8,
-                },
-                (response) => {
-                  if (response.didCancel) {
-                    console.log('User cancelled camera');
-                  } else if (response.errorCode) {
-                    console.log('Camera Error:', response.errorMessage);
-                  } else if (response.assets && response.assets[0]) {
-                    setIsUploading(true);
-                    setSelectedImage({ uri: response.assets[0].uri || '' });
-                    
-                    // Simulate upload process
-                    setTimeout(() => {
-                      setIsUploading(false);
-                    }, 1500);
-                  }
-                }
-              );
-            }
-          }
+          onPress: takePhoto
         },
         {
           text: "Choose from Gallery",
-          onPress: () => {
-            launchImageLibrary(
-              {
-                mediaType: 'photo',
-                quality: 0.8,
-              },
-              (response) => {
-                if (response.didCancel) {
-                  console.log('User cancelled image picker');
-                } else if (response.errorCode) {
-                  console.log('ImagePicker Error:', response.errorMessage);
-                } else if (response.assets && response.assets[0]) {
-                  setIsUploading(true);
-                  setSelectedImage({ uri: response.assets[0].uri || '' });
-                  
-                  // Simulate upload process
-                  setTimeout(() => {
-                    setIsUploading(false);
-                  }, 1500);
-                }
-              }
-            );
-          }
+          onPress: pickImage
         },
         {
           text: "Cancel",
