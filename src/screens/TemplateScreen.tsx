@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   LogBox,
+  Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -20,6 +21,7 @@ interface TemplateOption {
   id: string;
   year: string;
   country: string;
+  image: any;
 }
 
 const TemplateScreen = () => {
@@ -42,8 +44,30 @@ const TemplateScreen = () => {
   } = route.params || {};
   
   const templateOptions: TemplateOption[] = [
-    { id: '1', year: '2023', country: 'France' },
-    { id: '2', year: '2015', country: 'France' },
+    { 
+      id: '1', 
+      year: '2019', 
+      country: 'France',
+      image: require('../assets/images/pass2019.jpg')
+    },
+    { 
+      id: '2', 
+      year: '2013', 
+      country: 'France',
+      image: require('../assets/images/pass2013.jpg')
+    },
+    { 
+      id: '3', 
+      year: '2008', 
+      country: 'France',
+      image: require('../assets/images/pass2008.jpeg')
+    },
+    { 
+      id: '4', 
+      year: '2006', 
+      country: 'France',
+      image: require('../assets/images/pass2006.jpeg')
+    },
   ];
 
   const [selectedTemplate, setSelectedTemplate] = useState('1');
@@ -108,7 +132,11 @@ const TemplateScreen = () => {
                 </View>
               </View>
               <View style={styles.templatePreview}>
-                {/* Empty view for passport preview */}
+                <Image 
+                  source={template.image}
+                  style={styles.passportImage}
+                  resizeMode="contain"
+                />
               </View>
             </TouchableOpacity>
           ))}
@@ -261,6 +289,12 @@ const styles = StyleSheet.create({
   templatePreview: {
     height: 200,
     backgroundColor: '#F9F9F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  passportImage: {
+    width: '90%',
+    height: '90%',
   },
   bottomContainer: {
     padding: 20,
