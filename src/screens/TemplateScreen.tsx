@@ -1,59 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Image,
   ScrollView,
+  LogBox,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 
-type SelectDocumentTemplateScreenNavigationProp = StackNavigationProp<
-  RootStackParamList,
-  'SelectDocumentTemplate'
->;
+type TemplateScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+type TemplateScreenRouteProp = RouteProp<RootStackParamList, 'Template'>;
 
-type SelectDocumentTemplateScreenRouteProp = RouteProp<
-  RootStackParamList,
-  'SelectDocumentTemplate'
->;
-
-type PassportTemplate = {
+interface TemplateOption {
   id: string;
   year: string;
   country: string;
-  image: any; // For now, we'll just use a placeholder
-};
+}
 
-const SelectDocumentTemplateScreen = () => {
-  const navigation = useNavigation<SelectDocumentTemplateScreenNavigationProp>();
-  const route = useRoute<SelectDocumentTemplateScreenRouteProp>();
-  const { country = 'France', language = 'French' } = route.params || {};
+const TemplateScreen = () => {
+  const navigation = useNavigation<TemplateScreenNavigationProp>();
+  const route = useRoute<TemplateScreenRouteProp>();
   
-  const [selectedTemplate, setSelectedTemplate] = useState('1'); // Default to 2023 Passport
-
-  const passportTemplates: PassportTemplate[] = [
-    {
-      id: '1',
-      year: '2023',
-      country: country,
-      image: null, // Will be a placeholder
-    },
-    {
-      id: '2',
-      year: '2015',
-      country: country,
-      image: null, // Will be a placeholder
-    },
+  // Ignore LogBox warnings about text strings
+  useEffect(() => {
+    LogBox.ignoreLogs(['Text strings must be rendered within a <Text> component']);
+  }, []);
+  
+  // Extract route params passed from SelectTargetDetailsScreen
+  const {
+    originCountry,
+    originLanguage,
+    documentType,
+    template: existingTemplate,
+    targetCountry,
+    targetLanguage
+  } = route.params || {};
+  
+  const templateOptions: TemplateOption[] = [
+    { id: '1', year: '2023', country: 'France' },
+    { id: '2', year: '2015', country: 'France' },
   ];
+
+  const [selectedTemplate, setSelectedTemplate] = useState('1');
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -62,7 +59,7 @@ const SelectDocumentTemplateScreen = () => {
           <Icon name="chevron-back" size={28} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Select Document Template</Text>
-        <View style={{ width: 28 }} />
+        <View style={{ width: 28 }} /> {/* Empty view for balance */}
       </View>
 
       {/* Pagination dots */}
@@ -85,30 +82,33 @@ const SelectDocumentTemplateScreen = () => {
             Select the version of your Passport based on the issue year
           </Text>
 
-          {/* Template options */}
-          {passportTemplates.map((template) => (
+          {templateOptions.map((template) => (
             <TouchableOpacity 
               key={template.id}
               style={[
-                styles.templateContainer,
-                selectedTemplate === template.id && styles.selectedTemplate
+                styles.templateCard,
+                selectedTemplate === template.id ? styles.selectedCard : styles.unselectedCard
               ]}
               onPress={() => setSelectedTemplate(template.id)}
             >
-              <View style={styles.radioContainer}>
-                <View style={styles.radioOuter}>
-                  {selectedTemplate === template.id && (
-                    <View style={styles.radioInner} />
-                  )}
+              <View style={styles.templateHeader}>
+                <View style={styles.radioContainer}>
+                  <View 
+                    style={[
+                      styles.radioOuter,
+                      selectedTemplate === template.id ? styles.radioOuterSelected : styles.radioOuterUnselected
+                    ]}
+                  >
+                    {selectedTemplate === template.id && <View style={styles.radioInner} />}
+                  </View>
                 </View>
                 <View style={styles.templateInfo}>
                   <Text style={styles.templateYear}>{template.year} Passport</Text>
                   <Text style={styles.templateCountry}>{template.country}</Text>
                 </View>
               </View>
-              <View style={styles.templateImageContainer}>
-                {/* This is where we would show a template preview */}
-                <View style={styles.templateImagePlaceholder} />
+              <View style={styles.templatePreview}>
+                {/* Empty view for passport preview */}
               </View>
             </TouchableOpacity>
           ))}
@@ -119,9 +119,18 @@ const SelectDocumentTemplateScreen = () => {
         <TouchableOpacity 
           style={styles.nextButton}
           onPress={() => {
-            const template = passportTemplates.find(t => t.id === selectedTemplate);
-            console.log('Selected template:', template?.year, 'for', template?.country);
-            navigation.navigate('SelectTargetDetails');
+            const selectedTemplateObj = templateOptions.find(t => t.id === selectedTemplate);
+            const newTemplate = `${selectedTemplateObj?.country.toLowerCase()}-passport-${selectedTemplateObj?.year}`;
+            
+            // Navigate to ReviewData with all params
+            navigation.navigate('ReviewData', {
+              originCountry,
+              originLanguage,
+              documentType,
+              template: newTemplate,
+              targetCountry,
+              targetLanguage
+            });
           }}
         >
           <Text style={styles.nextButtonText}>Next</Text>
@@ -156,8 +165,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: 10,
+    marginBottom: 20,
   },
   paginationDot: {
     width: 8,
@@ -178,46 +187,58 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   contentContainer: {
-    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   sectionTitle: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
     color: '#666',
-    marginBottom: 30,
-  },
-  templateContainer: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 10,
-    padding: 20,
     marginBottom: 20,
-    backgroundColor: '#FFFFFF',
   },
-  selectedTemplate: {
+  templateCard: {
+    borderWidth: 1,
+    borderRadius: 12,
+    marginBottom: 20,
+    overflow: 'hidden',
+  },
+  selectedCard: {
     borderColor: '#007BFF',
     backgroundColor: '#F0F8FF',
   },
-  radioContainer: {
+  unselectedCard: {
+    borderColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
+  },
+  templateHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    padding: 16,
+  },
+  radioContainer: {
+    marginRight: 12,
   },
   radioOuter: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#007BFF',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  radioOuterSelected: {
+    borderColor: '#007BFF',
+  },
+  radioOuterUnselected: {
+    borderColor: '#C0C0C0',
   },
   radioInner: {
     width: 12,
@@ -226,31 +247,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
   },
   templateInfo: {
-    marginLeft: 15,
+    flexDirection: 'column',
   },
   templateYear: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#007BFF',
   },
   templateCountry: {
-    fontSize: 16,
+    fontSize: 18,
     color: '#666',
-    marginTop: 4,
   },
-  templateImageContainer: {
-    width: '100%',
-    aspectRatio: 1.5, // Maintains the aspect ratio of the passport image
-    marginTop: 10,
-  },
-  templateImagePlaceholder: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#F5F5F5',
-    borderRadius: 5,
+  templatePreview: {
+    height: 200,
+    backgroundColor: '#F9F9F9',
   },
   bottomContainer: {
     padding: 20,
+    paddingBottom: 30,
   },
   nextButton: {
     backgroundColor: '#007BFF',
@@ -265,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SelectDocumentTemplateScreen; 
+export default TemplateScreen; 

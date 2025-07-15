@@ -5,13 +5,14 @@ import {
   HomeScreen, 
   DocumentTypeScreen, 
   SelectOriginDetailsScreen,
-  SelectDocumentTemplateScreen,
   SelectTargetDetailsScreen,
   LoadingScreen,
   ReviewDataScreen,
   PaymentScreen,
   ConfirmationScreen
 } from '../screens';
+import TemplateScreen from '../screens/TemplateScreen';
+import UploadDocumentScreen from '../screens/UploadDocumentScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -19,13 +20,36 @@ export type RootStackParamList = {
   SelectOriginDetails: {
     documentType?: string;
   };
-  SelectDocumentTemplate: {
-    country?: string;
-    language?: string;
+  UploadDocument: {
+    originCountry?: string;
+    originLanguage?: string;
+    documentType?: string;
+    targetCountry?: string;
+    targetLanguage?: string;
   };
-  SelectTargetDetails: undefined;
+  Template: {
+    originCountry?: string;
+    originLanguage?: string;
+    documentType?: string;
+    template?: string;
+    targetCountry?: string;
+    targetLanguage?: string;
+  };
+  SelectTargetDetails: {
+    originCountry?: string;
+    originLanguage?: string;
+    documentType?: string;
+    template?: string;
+  };
   Loading: undefined;
-  ReviewData: undefined;
+  ReviewData: {
+    originCountry?: string;
+    originLanguage?: string;
+    documentType?: string;
+    template?: string;
+    targetCountry?: string;
+    targetLanguage?: string;
+  };
   Payment: undefined;
   Confirmation: undefined;
 };
@@ -44,8 +68,9 @@ const AppNavigator = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="DocumentType" component={DocumentTypeScreen} />
         <Stack.Screen name="SelectOriginDetails" component={SelectOriginDetailsScreen} />
-        <Stack.Screen name="SelectDocumentTemplate" component={SelectDocumentTemplateScreen} />
         <Stack.Screen name="SelectTargetDetails" component={SelectTargetDetailsScreen} />
+        <Stack.Screen name="UploadDocument" component={UploadDocumentScreen} />
+        <Stack.Screen name="Template" component={TemplateScreen} />
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="ReviewData" component={ReviewDataScreen} />
         <Stack.Screen name="Payment" component={PaymentScreen} />

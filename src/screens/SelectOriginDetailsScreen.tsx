@@ -194,9 +194,10 @@ const SelectOriginDetailsScreen = () => {
           disabled={!country || !language}
           onPress={() => {
             console.log('Navigate to next screen with:', country, language);
-            navigation.navigate('SelectDocumentTemplate', {
-              country,
-              language
+            navigation.navigate('SelectTargetDetails', {
+              originCountry: country,
+              originLanguage: language,
+              documentType: 'Passport'
             });
           }}
         >

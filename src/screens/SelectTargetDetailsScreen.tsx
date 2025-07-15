@@ -43,6 +43,15 @@ const languages = [
 
 const SelectTargetDetailsScreen = () => {
   const navigation = useNavigation<SelectTargetDetailsScreenNavigationProp>();
+  const route = useRoute<SelectTargetDetailsScreenRouteProp>();
+  
+  // Get the translation details passed from the previous screen
+  const { 
+    originCountry = 'Germany', 
+    originLanguage = 'German',
+    documentType = 'Passport',
+    template = 'german-passport-2017'
+  } = route.params || {};
   
   const [country, setCountry] = useState('');
   const [language, setLanguage] = useState('');
@@ -205,10 +214,20 @@ const SelectTargetDetailsScreen = () => {
           disabled={!country || !language}
           onPress={() => {
             console.log('Continue to next screen with:', {
+              originCountry,
+              originLanguage,
+              documentType,
+              template,
               targetCountry: country,
               targetLanguage: language
             });
-            navigation.navigate('ReviewData');
+            navigation.navigate('UploadDocument', {
+              originCountry,
+              originLanguage,
+              documentType,
+              targetCountry: country,
+              targetLanguage: language
+            });
           }}
         >
           <Text style={styles.continueButtonText}>Continue</Text>
