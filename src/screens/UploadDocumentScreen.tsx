@@ -6,11 +6,16 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  Image,
+  Platform,
+  PermissionsAndroid,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 type UploadDocumentScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 type UploadDocumentScreenRouteProp = RouteProp<RootStackParamList, 'UploadDocument'>;
@@ -29,23 +34,98 @@ const UploadDocumentScreen = () => {
   } = route.params || {};
 
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<{uri: string} | null>(null);
+  
+  // Request camera permissions (Android only)
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "Camera Permission",
+            message: "App needs camera permission to take pictures of your documents",
+            buttonPositive: "OK",
+            buttonNegative: "Cancel"
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (error) {
+        console.log(error);
+        return false;
+      }
+    }
+    return true;
+  };
   
   // Handle document upload
-  const handleUpload = () => {
-    setIsUploading(true);
-    
-    // Simulate upload process
-    setTimeout(() => {
-      setIsUploading(false);
-      // Navigate to template screen after upload
-      navigation.navigate('Template', {
-        originCountry,
-        originLanguage,
-        documentType,
-        targetCountry,
-        targetLanguage
-      });
-    }, 1500);
+  const handleUpload = async () => {
+    // Show action sheet with options
+    Alert.alert(
+      "Select Document",
+      "Choose an option to upload your document",
+      [
+        {
+          text: "Take Photo",
+          onPress: async () => {
+            const hasPermission = await requestCameraPermission();
+            if (hasPermission) {
+              launchCamera(
+                {
+                  mediaType: 'photo',
+                  quality: 0.8,
+                },
+                (response) => {
+                  if (response.didCancel) {
+                    console.log('User cancelled camera');
+                  } else if (response.errorCode) {
+                    console.log('Camera Error:', response.errorMessage);
+                  } else if (response.assets && response.assets[0]) {
+                    setIsUploading(true);
+                    setSelectedImage({ uri: response.assets[0].uri || '' });
+                    
+                    // Simulate upload process
+                    setTimeout(() => {
+                      setIsUploading(false);
+                    }, 1500);
+                  }
+                }
+              );
+            }
+          }
+        },
+        {
+          text: "Choose from Gallery",
+          onPress: () => {
+            launchImageLibrary(
+              {
+                mediaType: 'photo',
+                quality: 0.8,
+              },
+              (response) => {
+                if (response.didCancel) {
+                  console.log('User cancelled image picker');
+                } else if (response.errorCode) {
+                  console.log('ImagePicker Error:', response.errorMessage);
+                } else if (response.assets && response.assets[0]) {
+                  setIsUploading(true);
+                  setSelectedImage({ uri: response.assets[0].uri || '' });
+                  
+                  // Simulate upload process
+                  setTimeout(() => {
+                    setIsUploading(false);
+                  }, 1500);
+                }
+              }
+            );
+          }
+        },
+        {
+          text: "Cancel",
+          style: "cancel"
+        }
+      ]
+    );
   };
 
   return (
@@ -90,13 +170,31 @@ const UploadDocumentScreen = () => {
               onPress={handleUpload}
               disabled={isUploading}
             >
-              <Icon name="cloud-upload-outline" size={60} color="#007BFF" />
-              <Text style={styles.uploadText}>
-                {isUploading ? 'Uploading...' : 'Tap to upload your document'}
-              </Text>
-              <Text style={styles.fileFormatText}>
-                Supported formats: PDF, JPG, PNG
-              </Text>
+              {selectedImage ? (
+                <View style={styles.selectedImageContainer}>
+                  <Image 
+                    source={selectedImage} 
+                    style={styles.selectedImage} 
+                    resizeMode="contain" 
+                  />
+                  <TouchableOpacity 
+                    style={styles.changeImageButton}
+                    onPress={handleUpload}
+                  >
+                    <Text style={styles.changeImageText}>Change Document</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <>
+                  <Icon name="cloud-upload-outline" size={60} color="#007BFF" />
+                  <Text style={styles.uploadText}>
+                    {isUploading ? 'Uploading...' : 'Tap to upload your document'}
+                  </Text>
+                  <Text style={styles.fileFormatText}>
+                    Supported formats: PDF, JPG, PNG
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -127,7 +225,10 @@ const UploadDocumentScreen = () => {
 
       <View style={styles.bottomContainer}>
         <TouchableOpacity 
-          style={styles.skipButton}
+          style={[
+            styles.skipButton,
+            selectedImage ? styles.nextButtonEnabled : styles.skipButton
+          ]}
           onPress={() => {
             // Skip uploading and go to template screen
             navigation.navigate('Template', {
@@ -135,11 +236,14 @@ const UploadDocumentScreen = () => {
               originLanguage,
               documentType,
               targetCountry,
-              targetLanguage
+              targetLanguage,
+              documentImage: selectedImage?.uri
             });
           }}
         >
-          <Text style={styles.skipButtonText}>Next</Text>
+          <Text style={styles.skipButtonText}>
+            {selectedImage ? 'Continue' : 'Next'}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -235,6 +339,24 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
+  selectedImageContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  selectedImage: {
+    width: '100%',
+    height: 180,
+    marginBottom: 10,
+  },
+  changeImageButton: {
+    marginTop: 10,
+  },
+  changeImageText: {
+    color: '#007BFF',
+    fontSize: 16,
+    fontWeight: '500',
+    textDecorationLine: 'underline',
+  },
   instructionsSection: {
     marginTop: 20,
     padding: 15,
@@ -266,6 +388,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  nextButtonEnabled: {
+    backgroundColor: '#007BFF',
   },
   skipButtonText: {
     color: '#FFFFFF',

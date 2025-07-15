@@ -40,7 +40,8 @@ const TemplateScreen = () => {
     documentType,
     template: existingTemplate,
     targetCountry,
-    targetLanguage
+    targetLanguage,
+    documentImage
   } = route.params || {};
   
   const templateOptions: TemplateOption[] = [
@@ -157,7 +158,8 @@ const TemplateScreen = () => {
               documentType,
               template: newTemplate,
               targetCountry,
-              targetLanguage
+              targetLanguage,
+              documentImage
             });
           }}
         >

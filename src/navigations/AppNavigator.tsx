@@ -34,6 +34,7 @@ export type RootStackParamList = {
     template?: string;
     targetCountry?: string;
     targetLanguage?: string;
+    documentImage?: string;
   };
   SelectTargetDetails: {
     originCountry?: string;
@@ -49,6 +50,7 @@ export type RootStackParamList = {
     template?: string;
     targetCountry?: string;
     targetLanguage?: string;
+    documentImage?: string;
   };
   Payment: undefined;
   Confirmation: undefined;
