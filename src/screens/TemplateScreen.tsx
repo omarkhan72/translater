@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -44,32 +44,90 @@ const TemplateScreen = () => {
     documentImage
   } = route.params || {};
   
-  const templateOptions: TemplateOption[] = [
-    { 
-      id: '1', 
-      year: '2019', 
-      country: 'France',
-      image: require('../assets/images/pass2019.jpg')
-    },
-    { 
-      id: '2', 
-      year: '2013', 
-      country: 'France',
-      image: require('../assets/images/pass2013.jpg')
-    },
-    { 
-      id: '3', 
-      year: '2008', 
-      country: 'France',
-      image: require('../assets/images/pass2008.jpeg')
-    },
-    { 
-      id: '4', 
-      year: '2006', 
-      country: 'France',
-      image: require('../assets/images/pass2006.jpeg')
-    },
-  ];
+  // Define template options based on the origin country
+  const templateOptions = useMemo(() => {
+    // Default to France if no country is specified
+    const country = originCountry || 'France';
+    
+    switch(country) {
+      case 'Italy':
+        return [
+          { 
+            id: '1', 
+            year: '2023', 
+            country: 'Italy',
+            image: require('../assets/images/Itly2023.jpg')
+          },
+          { 
+            id: '2', 
+            year: '2012', 
+            country: 'Italy',
+            image: require('../assets/images/Itly2012.jpg')
+          },
+          { 
+            id: '3', 
+            year: '2006', 
+            country: 'Italy',
+            image: require('../assets/images/Itly2006.jpeg')
+          },
+        ];
+      case 'Germany':
+        return [
+          { 
+            id: '1', 
+            year: '2024', 
+            country: 'Germany',
+            image: require('../assets/images/German2024.jpg')
+          },
+          { 
+            id: '2', 
+            year: '2017', 
+            country: 'Germany',
+            image: require('../assets/images/German2017.jpeg')
+          },
+          { 
+            id: '3', 
+            year: '2014', 
+            country: 'Germany',
+            image: require('../assets/images/German2014.jpeg')
+          },
+          { 
+            id: '4', 
+            year: '2007', 
+            country: 'Germany',
+            image: require('../assets/images/German2007.jpeg')
+          },
+        ];
+      case 'France':
+      default:
+        return [
+          { 
+            id: '1', 
+            year: '2019', 
+            country: 'France',
+            image: require('../assets/images/pass2019.jpg')
+          },
+          { 
+            id: '2', 
+            year: '2013', 
+            country: 'France',
+            image: require('../assets/images/pass2013.jpg')
+          },
+          { 
+            id: '3', 
+            year: '2008', 
+            country: 'France',
+            image: require('../assets/images/pass2008.jpeg')
+          },
+          { 
+            id: '4', 
+            year: '2006', 
+            country: 'France',
+            image: require('../assets/images/pass2006.jpeg')
+          },
+        ];
+    }
+  }, [originCountry]);
 
   const [selectedTemplate, setSelectedTemplate] = useState('1');
 
@@ -104,7 +162,7 @@ const TemplateScreen = () => {
           <Text style={styles.sectionTitle}>Document Template</Text>
           
           <Text style={styles.subtitle}>
-            Select the version of your Passport based on the issue year
+            Select the version of your {originCountry} Passport based on the issue year
           </Text>
 
           {templateOptions.map((template) => (
