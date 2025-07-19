@@ -8,3 +8,4 @@ export { default as PaymentScreen } from './PaymentScreen';
 export { default as ConfirmationScreen } from './ConfirmationScreen'; 
 export { default as TemplateScreen } from './TemplateScreen'; 
 export { default as UploadDocumentScreen } from './UploadDocumentScreen'; 
+export { default as ReviewTranslatedDataScreen } from './ReviewTranslatedDataScreen'; 

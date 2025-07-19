@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigations/AppNavigator';
 
-type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+type LoadingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Loading'>;
 
 const LoadingScreen = () => {
   const navigation = useNavigation<LoadingScreenNavigationProp>();
@@ -70,9 +70,12 @@ const LoadingScreen = () => {
     startFloatingAnimation(floatAnimation5, 3500, 100);
     startFloatingAnimation(floatAnimation6, 2600, 500);
     
-    // Navigate to Payment screen after 3 seconds (instead of Home screen)
+    // Navigate to ReviewTranslatedData screen after 3 seconds
     const navigationTimer = setTimeout(() => {
-      navigation.navigate('Payment');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'ReviewTranslatedData' }],
+      });
     }, 3000);
     
     // Clear timeout if component unmounts

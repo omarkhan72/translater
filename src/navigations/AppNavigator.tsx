@@ -9,10 +9,11 @@ import {
   LoadingScreen,
   ReviewDataScreen,
   PaymentScreen,
-  ConfirmationScreen
+  ConfirmationScreen,
+  TemplateScreen,
+  UploadDocumentScreen,
+  ReviewTranslatedDataScreen
 } from '../screens';
-import TemplateScreen from '../screens/TemplateScreen';
-import UploadDocumentScreen from '../screens/UploadDocumentScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -52,6 +53,15 @@ export type RootStackParamList = {
     targetLanguage?: string;
     documentImage?: string;
   };
+  ReviewTranslatedData: {
+    originCountry?: string;
+    originLanguage?: string;
+    documentType?: string;
+    template?: string;
+    targetCountry?: string;
+    targetLanguage?: string;
+    documentImage?: string;
+  };
   Payment: undefined;
   Confirmation: undefined;
 };
@@ -75,6 +85,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Template" component={TemplateScreen} />
         <Stack.Screen name="Loading" component={LoadingScreen} />
         <Stack.Screen name="ReviewData" component={ReviewDataScreen} />
+        <Stack.Screen name="ReviewTranslatedData" component={ReviewTranslatedDataScreen} />
         <Stack.Screen name="Payment" component={PaymentScreen} />
         <Stack.Screen name="Confirmation" component={ConfirmationScreen} />
       </Stack.Navigator>
